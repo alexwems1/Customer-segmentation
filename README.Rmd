@@ -1,0 +1,24 @@
+---
+output: github_document
+---
+
+# Customer segmentation 
+
+It is very important for a company to know who its product or service is aimed at. That is why they look for ways to know the market. This can be done through market research, among other things. One of the most efficient is customer segmentation, which allows you to know the public that consumes your brand.
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r cars}
+summary(cars)
+```
+
+
+```{r pressure, echo = FALSE}
+plot(pressure)
+```
+
