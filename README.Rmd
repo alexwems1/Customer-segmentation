@@ -6,19 +6,83 @@ output: github_document
 
 It is very important for a company to know who its product or service is aimed at. That is why they look for ways to know the market. This can be done through market research, among other things. One of the most efficient is customer segmentation, which allows you to know the public that consumes your brand.
 
+The code is avaible in the `Costumer-Segmentation.R` file. 
+
+The first step is to take a look at our data.
+
+
+
 ```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
+library(DBI)
+library(plot3D)
+
+connect_own<-function() {
+  
+  options(mysql = list(
+    "host" = "127.0.0.1", 
+    "port" = 3306,
+    "user" = "alexwems",
+    "password" = "T77vqlra$"
+    
+  ))
+  
+  
+  db <- RMySQL::dbConnect(RMySQL::MySQL(), dbname = "base", host = options()$mysql$host, 
+                          port = options()$mysql$port, user = options()$mysql$user, 
+                          password = options()$mysql$password)  
+  
+  
+  
+  return(db)
+}
+
+con_own <- connect_own()
+dbListTables(con_own)
+datos <- dbReadTable(con_own, "segmentacion_clientes")
+write.csv(datos, "/home/alexwems1/Documentos/R/datos.csv", row.names = FALSE)
+```
+
+```{r echo=FALSE}
+head(datos)
+```
+
+A summary of the data: 
+
+```{r cars, echo=FALSE}
+summary(datos)
+```
+
+```{r, echo= FALSE}
+cat("The standard deviation of the spending score", 
+sd(datos$Spending.Score..1.100.)
 )
+
+cat("The standard deviation of the annual income is", sd(datos$Annual.Income..k..))
+
 ```
 
-```{r cars}
-summary(cars)
+***
+### Data visualitation.
+
+Now that we have a better idea of what the data represent, we will visualize them in a more graphical way. 
+
+##### Gender data:
+```{r echo=FALSE}
+library(plotrix)
+porcentaje <-(table(datos$Gender)/sum(table(datos$Gender))*100)
+pie3D(table(datos$Gender), labels = paste(row.names(porcentaje),porcentaje, "%"), main = "Gender distribution")
 ```
 
+##### Age data:
 
-```{r pressure, echo = FALSE}
-plot(pressure)
+```{r echo=FALSE}
+
+hist(datos$Age, main = "Age distribution", xlab = "Edades", ylab = "Frecuencia", col = "deepskyblue2")
+```
+
+##### Annual Income data:
+```{r echo=FALSE}
+plot((density(datos$Annual.Income..k..,)), main = "Annual Income density")
+polygon(density(datos$Annual.Income..k..), col = "#9FBECA")
 ```
 
