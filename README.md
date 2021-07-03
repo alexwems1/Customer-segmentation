@@ -1,5 +1,5 @@
 
-# Customer segmentation
+# Customer segmentation with Machine Learning
 
 It is very important for a company to know who its product or service is
 aimed at. That is why they look for ways to know the market. This can be
@@ -58,3 +58,44 @@ visualize them in a more graphical way.
 ##### Annual Income data:
 
 ![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+With the visualization of the above graphs, it is possible to get an
+idea of the segmentation of the market under study. With the
+visualization of these variables alone, you can begin to draw
+conclusions.
+
+------------------------------------------------------------------------
+
+### Segmentation
+
+With the visualization of the data through graphs, you have a better
+understanding of the elements that you have and the repercussion that
+one can have with the other. For customer segmentation, the Machine
+Learning K means algorithm was used, which is of great help for the
+creation of clusters in the data.
+
+The first step for this is to take the indicated number of cumulus
+clusters for the model.
+
+Two methods were used to find the correct number of clusters, the elbow
+method and the silhouette method.
+
+Let’s take a look in our data to get a better idea of how th clusters
+are made:
+
+![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+
+The elbow method provides the following results:
+
+![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+The silhouette method provides the following results:
+
+![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
+We can see from both graphs that the best number of clusters that can be
+chosen is 5.
+
+Now the implementation of the k-meand algorith is:
+
+![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->

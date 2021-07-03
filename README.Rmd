@@ -2,7 +2,7 @@
 output: github_document
 ---
 
-# Customer segmentation 
+# Customer segmentation with Machine Learning
 
 It is very important for a company to know who its product or service is aimed at. That is why they look for ways to know the market. This can be done through market research, among other things. One of the most efficient is customer segmentation, which allows you to know the public that consumes your brand.
 
@@ -77,7 +77,7 @@ pie3D(table(datos$Gender), labels = paste(row.names(porcentaje),porcentaje, "%")
 
 ```{r echo=FALSE}
 
-hist(datos$Age, main = "Age distribution", xlab = "Edades", ylab = "Frecuencia", col = "deepskyblue2")
+hist(datos$Age, main = "Age distribution", xlab = "Ages", ylab = "Frecuencia", col = "deepskyblue2")
 ```
 
 ##### Annual Income data:
@@ -86,3 +86,87 @@ plot((density(datos$Annual.Income..k..,)), main = "Annual Income density")
 polygon(density(datos$Annual.Income..k..), col = "#9FBECA")
 ```
 
+With the visualization of the above graphs, it is possible to get an idea of the segmentation of the market under study. With the visualization of these variables alone, you can begin to draw conclusions. 
+
+***
+### Segmentation
+
+
+With the visualization of the data through graphs, you have a better understanding of the elements that you have and the repercussion that one can have with the other. For customer segmentation, the Machine Learning K means algorithm was used, which is of great help for the creation of clusters in the data. 
+
+The first step for this is to take the indicated number of cumulus clusters for the model. 
+
+Two methods were used to find the correct number of clusters, the elbow method and the silhouette method.
+
+
+Let's take a look in our data to get a better idea of how th clusters are made:
+
+```{r echo=FALSE}
+library(purrr)
+set.seed(123)
+data_clustering <- cbind.data.frame(datos$Annual.Income..k.., datos$Spending.Score..1.100.)
+names(data_clustering)[1] <- "IncomeAnnual"
+names(data_clustering)[2] <- "SpendingScore"
+
+plot(x = data_clustering$IncomeAnnual, y = data_clustering$SpendingScore, ylab = "Spending Score"
+     , xlab = "Income Annual", main = "Customer clustering per Income and Spend")
+
+
+```
+
+The elbow method provides the following results:
+
+
+```{r echo=FALSE}
+clusters <- c()
+for (i in c(1:10)) {
+  clusters[i] <- kmeans(data_clustering, i, iter.max = 100, nstart = 100, algorithm = "Lloyd")$tot.withinss
+  
+}
+plot(x = c(1:10), y = clusters, lines(c(1:10),clusters), xlab = "Clusters", ylab = "Total intra-clusters sum of squares")
+
+
+```
+
+
+
+The silhouette method provides the following results:
+
+```{r include=FALSE}
+
+library(cluster)
+library(gridExtra)
+library(grid)
+average_sil <- c()
+for (i in c(2:10)) {
+  k<-kmeans(data_clustering,i,iter.max=100,nstart=50,algorithm="Lloyd")
+  silh_plot<-plot(silhouette(k$cluster,dist(data_clustering,"euclidean")))
+  s <- silhouette(k$cluster,dist(data_clustering,"euclidean"))
+  average_sil[i-1] <- mean(s[,3])
+}
+average_sil
+length(average_sil)
+plot(c(2:10), average_sil, type = "o")
+```
+
+```{r echo=FALSE}
+plot(c(2:10), average_sil, type = "o")
+```
+
+
+We can see from both graphs that the best number of clusters that can be chosen is 5.
+
+Now the implementation of the k-meand algorith is:
+
+
+```{r include=FALSE}
+
+library(cluster)
+library(factoextra)
+final <- kmeans(data_clustering,5,iter.max=100,nstart=50,algorithm="Lloyd")
+```
+
+```{r echo=FALSE}
+
+fviz_cluster(final, data = data_clustering)
+```

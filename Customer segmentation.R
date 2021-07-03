@@ -1,7 +1,9 @@
+#Optaining data 
+
 library(DBI)
 library(plot3D)
 
-connect_own<-function() {
+  connect_own<-function() {
   
   options(mysql = list(
     "host" = "127.0.0.1", 
@@ -29,7 +31,7 @@ dbListTables(con_own)
 datos <- dbReadTable(con_own, "segmentacion_clientes")
 write.csv(datos, "/home/alexwems1/Documentos/R/datos.csv", row.names = FALSE)
 
-#Exploracion de datos
+#data exploration
 str(datos)
 names(datos)
 head(datos)
@@ -38,11 +40,13 @@ sd(datos$Spending.Score..1.100.)
 summary(datos$Annual.Income..k..)
 sd(datos$Annual.Income..k..)
 summary(datos$Age)
+
+#Graphs
 barplot(table(datos$Gender), main = "Comparacion de  generos", names.arg = c("Hombres", "Mujeres"))
 library(plotrix)
 porcentaje <-(table(datos$Gender)/sum(table(datos$Gender))*100)
 pie3D(table(datos$Gender), labels = paste(row.names(porcentaje),porcentaje, "%"))
-hist(datos$Age, main = "Histograma de edades", xlab = "Edades", ylab = "Frecuencia", col = "deepskyblue2")
+hist(datos$Age, main = "Histograma de edades", xlab = "Edades", ylab = "Frecuencia", col = "#9FBECA")
 boxplot(datos$Age)
 #Visualizacion de ingresos 
 hist(datos$Annual.Income..k.., xlab = "Ingresos anuales", col = "steelblue1")
@@ -52,22 +56,31 @@ polygon(density(datos$Annual.Income..k..), col = "springgreen")
 boxplot(datos$Spending.Score..1.100.)
 hist(datos$Spending.Score..1.100., col = "grey", main = "Histograma Spending Score", xlab = "Spending Score")
 #-----------------------------Algoritmo K-means---------------------------------------------
-#-------------------Determinar el numero de clusters
-#Elbow Method 
+
+#Customer clustering per income to spend 
 library(purrr)
 set.seed(123)
 data_clustering <- cbind.data.frame(datos$Annual.Income..k.., datos$Spending.Score..1.100.)
+names(data_clustering)[1] <- "IncomeAnnual"
+names(data_clustering)[2] <- "SpendingScore"
+
+plot(x = data_clustering$IncomeAnnual, y = data_clustering$SpendingScore, ylab = "Spending Score"
+     , xlab = "Income Annual", main = "Customer clustering per Income and Spend")
+
+#elbow method
 clusters <- c()
 for (i in c(1:10)) {
   clusters[i] <- kmeans(data_clustering, i, iter.max = 100, nstart = 100, algorithm = "Lloyd")$tot.withinss
   
 }
 clusters
-plot(x = c(1:10), y = clusters, lines(c(1:10),clusters), xlab = "Numero de clusters", ylab = "Total intra-clusters sum of squares")
-library(cluster)
+plot(x = c(1:10), y = clusters, lines(c(1:10),clusters), xlab = "Clusters", ylab = "Total intra-clusters sum of squares")
+
+
+#siluette method 
+library(cluster)f
 library(gridExtra)
 library(grid)
-library
 average_sil <- c()
 for (i in c(2:10)) {
   k<-kmeans(data_clustering,i,iter.max=100,nstart=50,algorithm="Lloyd")
@@ -78,6 +91,10 @@ for (i in c(2:10)) {
 average_sil
 length(average_sil)
 plot(c(2:10), average_sil, type = "o")
-final <- kmeans(data_clustering,6,iter.max=100,nstart=50,algorithm="Lloyd")
-fviz_cluster(final, data = data_clustering)
 
+#Kmeans
+
+library(cluster)
+library(factoextra)
+final <- kmeans(data_clustering,5,iter.max=100,nstart=50,algorithm="Lloyd")
+fviz_cluster(final, data = data_clustering)
